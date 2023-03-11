@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AlertifyService, MessageType, Position } from 'src/app/services/admin/alertify.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -6,5 +7,22 @@ import { Component } from '@angular/core';
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent {
+  constructor(private alertify : AlertifyService){
+  }
 
+  ngOnInit():void{
+  }
+
+  m(){
+
+    this.alertify.message("Merhaba",{
+      messageType:MessageType.Success,
+      delay : 5,
+      position : Position.TopLeft,
+    } );
+  }
+
+  d(){
+   this.alertify.dismiss();
+  }
 }
