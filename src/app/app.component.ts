@@ -11,9 +11,8 @@ declare var $: any
 })
 export class AppComponent {
   title = 'ECommerceClient';
-  constructor(private toastrService:CustomToastrService){
+  constructor(){
 
-    toastrService.message("Mehabe","Cmela",{messageType : ToastrMessageType.Info,position:ToastrPosition.TopCenter});
   }
 
 }
