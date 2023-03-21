@@ -25,6 +25,7 @@ export class CreateComponent extends BaseComponent {
     create_product.stock=parseInt(stock.value);
     create_product.price = parseFloat(price.value);
 
+
     this.productService.create(create_product,()=>{
       this.hideSpinner(SpinnerType.BallAtom);
     this.alertify.message("Product Added Succesfully",{
@@ -32,6 +33,12 @@ export class CreateComponent extends BaseComponent {
       messageType:MessageType.Success,
       position:Position.TopRight
     });
+    }, errorMessage=>{
+      this.alertify.message(errorMessage,{
+        dismissOther:true,
+        messageType:MessageType.Error,
+        position:Position.TopRight
+      })
     });
     
   }
