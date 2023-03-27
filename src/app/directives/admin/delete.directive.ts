@@ -1,7 +1,9 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Directive, ElementRef, EventEmitter, HostListener, Input, Output, Renderer2 } from '@angular/core';
 import { async } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { DeleteDialogComponent, DeleteState } from 'src/app/dialogs/delete-dialog/delete-dialog.component';
+import { AlertifyService, MessageType, Position } from 'src/app/services/admin/alertify.service';
 import { HttpClientService } from 'src/app/services/common/http-client.service';
 import { ProductService } from 'src/app/services/common/models/product.service';
 
@@ -14,8 +16,9 @@ export class DeleteDirective {
 
   constructor(private element: ElementRef,
     private _renderer: Renderer2,
-    private productService: ProductService,
-    public dialog: MatDialog
+    private httpClientService: HttpClientService,
+    public dialog: MatDialog,
+    private alertifyService : AlertifyService
     ) {
     const img = _renderer.createElement("img");
     img.setAttribute("src", "../../../../../assets/delete.png");
@@ -28,6 +31,7 @@ export class DeleteDirective {
 
 
   @Input() id:string;
+  @Input() controller:string;
   @Output() callback : EventEmitter<any> = new EventEmitter();
 
   
@@ -35,16 +39,31 @@ export class DeleteDirective {
   async onClick() {
      this.openDialog(async()=>{
       const td : HTMLTableCellElement = this.element.nativeElement;
-     await this.productService.delete(this.id);
-      $(td.parentElement).animate({
-        opacity : 0,
-        width : 0,
-        padding : 0,
-        margin : 0
-      },
-      ()=>{
-        this.callback.emit();
-      });
+      this.httpClientService.delete({
+        controller:this.controller
+      },this.id).subscribe(data=>{
+        $(td.parentElement).animate({
+          opacity : 0,
+          width : 0,
+          padding : 0,
+          margin : 0
+        },
+        ()=>{
+          this.callback.emit();
+          this.alertifyService.message("Product Removed Successfully",{
+            dismissOther:true,
+            messageType:MessageType.Success,
+            position:Position.TopRight
+          })
+        });
+      },(errorResponse : HttpErrorResponse)=>{
+        this.alertifyService.message("Unexpected Error",{
+          dismissOther:true,
+          messageType:MessageType.Error,
+          position:Position.TopRight
+        })
+      })
+      
     });
   }
   openDialog(afterClosed:any): void {
